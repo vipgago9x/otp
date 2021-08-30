@@ -77,6 +77,7 @@ func OtpRequest(token string, req_id string, phone_number string) (status int, i
 				return -1, "", err
 			}
 		}
+		break
 	}
 
 	// Check if error
