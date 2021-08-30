@@ -13,7 +13,7 @@ import (
 	"github.com/vipgago9x/otp/sdk/models"
 )
 
-// Opt service
+// Otp service
 func OtpRequest(token string, req_id string, phone_number string) (status int, id string, _err error) {
 
 	var file []byte
@@ -25,7 +25,7 @@ func OtpRequest(token string, req_id string, phone_number string) (status int, i
 		log.Fatal(err)
 	}
 
-	// Make folder containing file
+	// Make folder containing file if not exist
 	if _, err := os.Stat(dirname + `\otp-sdk`); os.IsNotExist(err) {
 		err := os.Mkdir(dirname+`\otp-sdk`, 0664)
 		if err != nil {
