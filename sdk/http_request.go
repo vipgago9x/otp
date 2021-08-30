@@ -12,13 +12,7 @@ import (
 
 // Call api
 func sendSMSRequest(token string, req_id string, phone_number string, template string) (*models.ResponseModel, error) {
-	return &models.ResponseModel{
-		Data: models.DataModel{Id: "321"},
-		Error: models.ErrorModel{
-			Code:    0,
-			Message: "Success",
-		},
-	}, nil
+
 	// Make body
 	body := fmt.Sprintf(`{"request_id": "%s","phone_number": "%s","template": "%s"}`, req_id, phone_number, template)
 
