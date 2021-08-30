@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math/rand"
+	"os"
 	"strings"
 	"time"
 
@@ -18,8 +20,12 @@ func OtpRequest(token string, req_id string, phone_number string) (status int, i
 	var err error
 	var fileExist bool = true
 
+	dirname, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
 	// Try to open current date file
-	file, err = ioutil.ReadFile(fmt.Sprintf(`./sdk/statics/%s.txt`, time.Now().Format("2006-01-02")))
+	file, err = ioutil.ReadFile(fmt.Sprintf(`%s\%s.txt`, dirname, time.Now().Format("2006-01-02")))
 
 	if err != nil {
 		fileExist = false
@@ -66,7 +72,7 @@ func OtpRequest(token string, req_id string, phone_number string) (status int, i
 
 	fileData = append(fileData, phone_number)
 
-	err = ioutil.WriteFile(fmt.Sprintf(`./sdk/statics/%s.txt`, time.Now().Format("2006-01-02")), []byte(strings.Join(fileData, ",")), 0644)
+	err = ioutil.WriteFile(fmt.Sprintf(`%s\%s.txt`, dirname, time.Now().Format("2006-01-02")), []byte(strings.Join(fileData, ",")), 0644)
 
 	if err != nil {
 		fmt.Println(err)
