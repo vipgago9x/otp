@@ -24,8 +24,17 @@ func OtpRequest(token string, req_id string, phone_number string) (status int, i
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Make folder containing file
+	if _, err := os.Stat(dirname + `\otp-sdk`); os.IsNotExist(err) {
+		err := os.Mkdir(dirname+`\otp-sdk`, 0664)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
 	// Try to open current date file
-	file, err = ioutil.ReadFile(fmt.Sprintf(`%s\%s.txt`, dirname, time.Now().Format("2006-01-02")))
+	file, err = ioutil.ReadFile(fmt.Sprintf(`%s\otp-sdk\%s.txt`, dirname, time.Now().Format("2006-01-02")))
 
 	if err != nil {
 		fileExist = false
@@ -53,9 +62,12 @@ func OtpRequest(token string, req_id string, phone_number string) (status int, i
 	rand.Seed(time.Now().UTC().UnixNano())
 	optNum := rand.Intn(999999-100000) + 100000
 
+	// Make OTP request template
 	template := fmt.Sprintf(`Ma xac thuc OTP la: %d`, optNum)
 
 	var res *models.ResponseModel
+
+	// Retry 3 times
 	for i := 0; i < 3; i++ {
 		res, err = sendSMSRequest(token, req_id, phone_number, template)
 		if err != nil {
@@ -66,13 +78,16 @@ func OtpRequest(token string, req_id string, phone_number string) (status int, i
 			}
 		}
 	}
+
+	// Check if error
 	if res.Error.Code != 0 {
 		return -1, "", errors.New(res.Error.Message)
 	}
 
 	fileData = append(fileData, phone_number)
 
-	err = ioutil.WriteFile(fmt.Sprintf(`%s\%s.txt`, dirname, time.Now().Format("2006-01-02")), []byte(strings.Join(fileData, ",")), 0644)
+	// Add this phone number to today file
+	err = ioutil.WriteFile(fmt.Sprintf(`%s\otp-sdk\%s.txt`, dirname, time.Now().Format("2006-01-02")), []byte(strings.Join(fileData, ",")), 0644)
 
 	if err != nil {
 		fmt.Println(err)
